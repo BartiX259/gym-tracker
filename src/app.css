@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", sans-serif;
+
+  /* Our Custom Palette */
+  --color-canvas: #F4F5F7;
+  
+  --color-ink-primary: #121417;
+  --color-ink-muted: #7E8695;
+
+  --color-pastel-mint: #86EFAC;
+  --color-pastel-mintSoft: #DCFCE7;
+  --color-pastel-mintText: #15803D;
+
+  --color-pastel-lavender: #C4B5FD;
+  --color-pastel-lavenderSoft: #EDE9FE;
+  --color-pastel-lavenderText: #6D28D9;
+
+  --color-pastel-slateTrack: #CBD5E1;
+  
+  --color-pastel-coralSoft: #FEE2E2;
+  --color-pastel-coralText: #B91C1C;
+}
+
+/* App-like behaviors */
+html, body {
+  overscroll-behavior-y: contain;
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+/* Hide number input spinners globally */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}

@@ -1,0 +1,32 @@
+{
+  "name": "Gym Tracker",
+  "short_name": "Gym",
+  "description": "Minimalist gym tracker",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F4F5F7",
+  "theme_color": "#F4F5F7",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "+3 Pull-Ups",
+      "short_name": "+3 Pulls",
+      "description": "Log 3 pull-ups instantly",
+      "url": "/?action=quick_pullups",
+      "icons": [
+        {
+          "src": "/icon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ]
+}
