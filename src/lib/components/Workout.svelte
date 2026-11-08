@@ -69,7 +69,7 @@
     }, 3200);
   }
 
-  // --- 3. Set Management & Steppers ---
+  // Steppers: cleanly bumps the number in one line
   function applyDelta(exerciseIndex, delta) {
     activeWorkoutStore.update(w => {
       w.exercises[exerciseIndex].sets.forEach(set => {
@@ -81,29 +81,75 @@
     });
   }
 
+  let animatingPRs = new Set();
+
+  // Toggle set: just flips completed status and checks PR
   function toggleSet(exerciseIndex, setIndex) {
     activeWorkoutStore.update(w => {
       const ex = w.exercises[exerciseIndex];
-      const set = ex.sets[setIndex];
-      set.completed = !set.completed;
+      const toggledSet = ex.sets[setIndex];
+      
+      // Toggle completion status
+      toggledSet.completed = !toggledSet.completed;
 
-      if (set.completed && set.weight > ex.lastWeight) {
+      // 1. Establish the baseline to beat (from the last session)
+      let runningBestWeight = ex.lastWeight || 0;
+      let runningBest1RM = Math.round((ex.lastWeight || 0) * (1 + (ex.lastReps || 0) / 30));
+
+      // 2. Re-evaluate every set in order from top to bottom
+      ex.sets.forEach((set, idx) => {
+        if (!set.completed) {
+          set.prType = null;
+          return;
+        }
+
         const est1RM = Math.round(set.weight * (1 + set.reps / 30));
-        showToast(`New PR! ${ex.name}`, `${set.weight} kg × ${set.reps} • Est. 1RM ${est1RM} kg`);
-      }
+        let earnedPR = null;
+
+        // Check for Heaviest Weight PR
+        if (set.weight > runningBestWeight) {
+          earnedPR = 'KG';
+          runningBestWeight = set.weight; 
+          // Don't lower the 1RM bar if a heavy set had low reps
+          runningBest1RM = Math.max(runningBest1RM, est1RM); 
+        } 
+        // Check for Est 1RM PR
+        else if (est1RM > runningBest1RM) {
+          earnedPR = 'RM';
+          runningBest1RM = est1RM;
+        }
+
+        set.prType = earnedPR;
+
+        // 3. ONLY animate if this is the set we just tapped, and it earned a PR
+        if (idx === setIndex && toggledSet.completed && earnedPR) {
+          const key = `${exerciseIndex}-${idx}`;
+          animatingPRs.add(key);
+          animatingPRs = animatingPRs; // trigger reactivity
+          
+          setTimeout(() => {
+            animatingPRs.delete(key);
+            animatingPRs = animatingPRs;
+          }, 400);
+        }
+      });
+
       return w;
     });
   }
 
+  // Add set: simply copies the previous row's numbers
   function addSet(exerciseIndex) {
     activeWorkoutStore.update(w => {
       const ex = w.exercises[exerciseIndex];
-      const prevSet = ex.sets[ex.sets.length - 1] || { weight: ex.lastWeight, reps: ex.lastReps };
-      ex.sets.push({
-        weight: prevSet.weight,
-        reps: prevSet.reps,
-        completed: false
-      });
+      const prev = ex.sets[ex.sets.length - 1] || { weight: ex.lastWeight, reps: ex.lastReps };
+      ex.sets.push({ weight: prev.weight, reps: prev.reps, completed: false });
+      return w;
+    });
+  }
+  function updateSet(exerciseIndex, setIndex, field, value) {
+    activeWorkoutStore.update(w => {
+      w.exercises[exerciseIndex].sets[setIndex][field] = Number(value) || 0;
       return w;
     });
   }
@@ -275,6 +321,8 @@
                 nextCompleted={exercise.sets[setIdx + 1]?.completed}
                 isLast={setIdx === exercise.sets.length - 1}
                 isHolding={holdingKey === `${exIdx}-${setIdx}`}
+                isPR={!!set.prType}
+                isAnimatingPR={animatingPRs.has(`${exIdx}-${setIdx}`)}
                 gap="16px"
               >
                 <!-- Left Touch Area -->
@@ -285,15 +333,54 @@
                   on:pointerleave={cancelSetHold}
                   on:pointercancel={cancelSetHold}
                 >
-                  <span class="text-xs font-bold w-3 text-ink-muted">{setIdx + 1}</span>
-                  <span class="text-xs font-medium text-ink-muted">{exercise.lastWeight} × {exercise.lastReps}</span>
+                  {#if set.prType}
+                    <!-- Same font and width, just bold gold -->
+                    <span class="text-xs font-bold w-4 text-amber-600">
+                      {set.prType}
+                    </span>
+                  {:else}
+                    <!-- Regular set number -->
+                    <span class="text-xs font-bold w-4 text-ink-muted">
+                      {setIdx + 1}
+                    </span>
+                  {/if}
+
+                  <span class="text-xs font-medium text-ink-muted">
+                    {exercise.lastWeight} × {exercise.lastReps}
+                  </span>
                 </div>
 
                 <!-- Inputs & Checkmark -->
                 <div class="flex items-center gap-2">
-                  <input type="number" step="0.5" bind:value={set.weight} on:focus={(e) => e.currentTarget.select()} class="w-16 text-center text-sm font-bold bg-white py-2 rounded-2xl outline-none focus:ring-2 focus:ring-pastel-mint" />
-                  <input type="number" bind:value={set.reps} on:focus={(e) => e.currentTarget.select()} class="w-12 text-center text-sm font-bold bg-white py-2 rounded-2xl outline-none focus:ring-2 focus:ring-pastel-mint" />
-                  <button on:click={() => toggleSet(exIdx, setIdx)} class="w-8 h-8 rounded-full flex items-center justify-center active:scale-90 {set.completed ? 'bg-pastel-mintSoft text-pastel-mintText' : 'bg-white border border-slate-200 text-ink-muted'}">
+                  <input 
+                    type="number"
+                    step="0.5"
+                    disabled={set.completed}
+                    value={set.weight}
+                    on:input={(e) => updateSet(exIdx, setIdx, 'weight', e.currentTarget.value)}
+                    on:focus={(e) => e.currentTarget.select()}
+                    class="w-16 text-center text-sm font-bold py-2 rounded-2xl outline-none transition
+                      {set.completed 
+                        ? 'bg-transparent text-ink-primary cursor-default' 
+                        : 'bg-white text-ink-primary focus:ring-2 focus:ring-pastel-mint'}"
+                  />
+                  
+                  <input 
+                    type="number"
+                    disabled={set.completed}
+                    value={set.reps}
+                    on:input={(e) => updateSet(exIdx, setIdx, 'reps', e.currentTarget.value)}
+                    on:focus={(e) => e.currentTarget.select()}
+                    class="w-12 text-center text-sm font-bold py-2 rounded-2xl outline-none transition
+                      {set.completed 
+                        ? 'bg-transparent text-ink-primary cursor-default' 
+                        : 'bg-white text-ink-primary focus:ring-2 focus:ring-pastel-mint'}"
+                  />
+                  
+                  <button 
+                    on:click={() => toggleSet(exIdx, setIdx)}
+                    class="w-8 h-8 rounded-full flex items-center justify-center active:scale-90 transition {set.completed ? 'bg-pastel-mintSoft text-pastel-mintText' : 'bg-white border border-slate-200 text-ink-muted'}"
+                  >
                     <Check class="w-4 h-4 stroke-[2.5]" />
                   </button>
                 </div>
