@@ -31,7 +31,7 @@
   });
 </script>
 
-<div class="min-h-screen bg-neutral-300 flex justify-center items-center sm:p-6 antialiased select-none font-sans overflow-hidden relative">
+<div class="min-h-screen bg-canvas sm:bg-neutral-300 flex justify-center items-center sm:p-6 antialiased select-none font-sans overflow-x-hidden relative">
 
   <!-- Quick Shortcut Toast Notification -->
   {#if quickPullupToast}

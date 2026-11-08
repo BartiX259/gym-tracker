@@ -139,12 +139,12 @@ function startWorkout() {
 </script>
 
 <!-- Mobile Viewport Container -->
-<div class="w-full max-w-sm bg-canvas min-h-screen sm:min-h-[844px] sm:h-[844px] sm:rounded-[44px] sm:shadow-2xl flex flex-col justify-between p-7 relative overflow-hidden">
+<div class="w-full max-w-none sm:max-w-[440px] bg-canvas min-h-screen sm:min-h-0 sm:h-[860px] sm:rounded-[44px] sm:shadow-2xl flex flex-col justify-between p-6 sm:p-7 relative overflow-hidden">
 
   <!-- Top Hero Header -->
   <header class="flex justify-between items-center pt-2">
     <div>
-      <p class="text-xs font-bold uppercase tracking-wider text-ink-muted">Training Log</p>
+      <p class="text-xs font-bold uppercase tracking-wider text-ink-muted">Gym Tracker</p>
       <h1 class="text-3xl font-extrabold text-ink-primary tracking-tight">Cycle {$cycleStore.current}</h1>
     </div>
     <button 
@@ -301,7 +301,7 @@ function startWorkout() {
     subtitle="Next Cycle"
     title="Advance to Cycle {$cycleStore.current + 1}?"
     description="This will archive current workouts and reset your pull-up counters."
-    confirmText="Advance ❯"
+    confirmText="Advance"
     confirmColor="bg-pastel-lavenderSoft text-pastel-lavenderText"
     on:close={() => showAdvanceModal = false}
     on:confirm={confirmAdvance}
