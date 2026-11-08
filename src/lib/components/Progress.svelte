@@ -8,7 +8,7 @@
     exerciseLogsStore,
     pullupStore
   } from '../store.js';
-  import { ChevronLeft, ChevronDown, Check } from 'lucide-svelte';
+  import { ChevronLeft, ChevronDown, Check, TrendingUp, TrendingDown } from 'lucide-svelte';
   import BottomSheet from './BottomSheet.svelte';
   import { 
     Chart, 
@@ -70,6 +70,16 @@
   function chooseExercise(ex) {
     selectedExercise = ex;
     showExercisePicker = false;
+  }
+  function getExerciseTrend(name) {
+    const logs = $exerciseLogsStore[name] || [];
+    if (logs.length < 2) return null;
+    const latest = logs[logs.length - 1];
+    const prev = logs[logs.length - 2];
+
+    if (latest.est1RM > prev.est1RM) return 'up';
+    if (latest.est1RM < prev.est1RM) return 'down';
+    return null;
   }
 
   // --- 1. Pull-Up Charts (Rendered Once on Mount) ---
@@ -381,15 +391,23 @@
     on:confirm={() => showExercisePicker = false}
   >
     <div class="max-h-60 overflow-y-auto no-scrollbar space-y-2 py-1">
-      {#each $sortedExercises as ex}
+      {#each sortedExercises as ex}
+        {@const trend = getExerciseTrend(ex)}
+
         <button 
           on:click={() => chooseExercise(ex)}
           class="w-full p-4 rounded-2xl flex items-center justify-between font-bold text-sm transition {selectedExercise === ex ? 'bg-pastel-mintSoft text-pastel-mintText' : 'bg-canvas text-ink-primary active:scale-[0.99]'}"
         >
           <span>{ex}</span>
-          {#if selectedExercise === ex}
-            <Check class="w-4 h-4 stroke-[3]" />
-          {/if}
+
+          <!-- Trend Icon (Trending Up / Down) -->
+          <div class="flex items-center gap-2">
+            {#if trend === 'up'}
+              <TrendingUp class="w-4 h-4" />
+            {:else if trend === 'down'}
+              <TrendingDown class="w-4 h-4" />
+            {/if}
+          </div>
         </button>
       {/each}
     </div>

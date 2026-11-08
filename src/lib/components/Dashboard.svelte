@@ -11,7 +11,7 @@
     discardActiveWorkout,
     viewingWorkoutStore
   } from '../store.js';
-  import { ChevronsRight, Settings, ChevronRight, Play, ArrowUpRight } from 'lucide-svelte';
+  import { ChevronsRight, Settings, ChevronRight, Play, TrendingUp } from 'lucide-svelte';
   import BottomSheet from './BottomSheet.svelte';
   import TimelineItem from './TimelineItem.svelte'
 
@@ -290,8 +290,8 @@ function startWorkout() {
       on:click={() => router.navigate('progress')}
       class="w-full bg-white text-ink-primary py-4 rounded-full font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition"
     >
-      <span>History & Progress</span>
-      <ArrowUpRight class="w-4 h-4 text-ink-muted stroke-[2.2]" />
+      <span>View Progress</span>
+      <TrendingUp class="w-4 h-4 text-ink" />
     </button>
   </footer>
 
