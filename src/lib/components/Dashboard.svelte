@@ -136,6 +136,21 @@ function startWorkout() {
     discardActiveWorkout();
     showDiscardModal = false;
   }
+  // Helper to format timestamps into relative time
+  function timeAgo(timestamp) {
+    if (!timestamp) return 'Previously';
+    const diffMs = Date.now() - timestamp;
+    const diffMins = Math.floor(diffMs / 60000);
+    
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return diffMins === 1 ? '1 minute ago' : `${diffMins} minutes ago`;
+    
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return diffHours === 1 ? '1 hour ago' : `${diffHours} hours ago`;
+    
+    const diffDays = Math.floor(diffHours / 24);
+    return diffDays === 1 ? '1 day ago' : `${diffDays} days ago`;
+  }
 </script>
 
 <!-- Mobile Viewport Container -->
@@ -156,7 +171,7 @@ function startWorkout() {
   </header>
 
   <!-- Main Content -->
-  <main class="space-y-8 my-auto py-2">
+  <main class="flex-1 overflow-y-auto no-scrollbar space-y-8 py-4 my-auto">
 
     <!-- PULL-UP SECTION -->
     <section class="space-y-6">
@@ -194,29 +209,33 @@ function startWorkout() {
         </div>
       </div>
 
-      <!-- Chunky Steppers -->
-      <div class="flex items-center justify-between gap-4 pt-1">
-        <button 
-          on:click={minusPullups}
-          class="flex-1 py-4 rounded-3xl bg-pastel-lavenderSoft text-pastel-lavenderText font-bold text-lg active:scale-95 transition text-center"
-        >
-          -{$pullupStore.increment}
-        </button>
-
+      <!-- Steppers -->
+      <div class="flex items-center gap-3 pt-1">
+        
         <!-- Working Settings Cog -->
         <button 
           on:click={openSettings}
-          class="w-14 h-14 rounded-3xl bg-white text-ink-muted hover:text-ink-primary flex items-center justify-center active:scale-95 transition"
+          class="w-14 h-14 flex-shrink-0 rounded-3xl bg-white text-ink-muted hover:text-ink-primary flex items-center justify-center active:scale-95 transition"
         >
           <Settings class="w-5 h-5 stroke-[2.2]" />
         </button>
 
+        <!-- Minus Button (Small) -->
+        <button 
+          on:click={minusPullups}
+          class="w-14 h-14 flex-shrink-0 rounded-3xl bg-pastel-lavenderSoft text-pastel-lavenderText font-bold text-lg flex items-center justify-center active:scale-95 transition"
+        >
+          -{$pullupStore.increment}
+        </button>
+
+        <!-- Plus Button (Large, takes remaining space) -->
         <button 
           on:click={addPullups}
-          class="flex-1 py-4 rounded-3xl bg-pastel-mintSoft text-pastel-mintText font-bold text-lg active:scale-95 transition text-center"
+          class="flex-1 h-14 rounded-3xl bg-pastel-mintSoft text-pastel-mintText font-bold text-lg flex items-center justify-center active:scale-95 transition"
         >
           +{$pullupStore.increment}
         </button>
+        
       </div>
 
     </section>
@@ -245,7 +264,9 @@ function startWorkout() {
               tabindex="0"
             >
               <div>
-                <p class="font-bold text-sm leading-tight transition-colors {holdingSessionId === workout.id ? 'text-rose-600' : 'text-ink-primary'}">Session {i + 1}</p>
+                <p class="font-bold text-sm leading-tight transition-colors {holdingSessionId === workout.id ? 'text-rose-600' : 'text-ink-primary'}">
+                  {timeAgo(workout.startTime || workout.id)}
+                </p>
                 <p class="text-xs font-medium mt-0.5 transition-colors {holdingSessionId === workout.id ? 'text-rose-500' : 'text-ink-muted'}">{workout.date} • {workout.exerciseCount} exercises</p>
               </div>
               <ChevronRight class="w-5 h-5 text-ink-muted stroke-[2]" />
@@ -258,7 +279,6 @@ function startWorkout() {
           completed={false}
           isLast={true}
           isHolding={isHoldingResume}
-          hollowBorder="border-emerald-500"
           gap="14px"
         >
           <button 

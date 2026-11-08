@@ -40,24 +40,37 @@
           <div class="relative pl-8 space-y-4">
             {#each exercise.sets as set, setIdx}
               <TimelineItem 
-                completed={true}
-                nextCompleted={setIdx < exercise.sets.length - 1}
+                completed={set.completed}
+                nextCompleted={exercise.sets[setIdx + 1]?.completed}
                 isLast={setIdx === exercise.sets.length - 1}
+                isPR={!!set.prType}
                 gap="16px"
               >
-                <!-- Set Number -->
+                <!-- Set Number / PR Badge -->
                 <div class="flex items-baseline gap-3">
-                  <span class="text-xs font-bold text-ink-muted w-3">{setIdx + 1}</span>
+                  {#if set.prType}
+                    <span class="text-xs font-bold w-3 text-amber-600">{set.prType}</span>
+                  {:else}
+                    <span class="text-xs font-bold text-ink-muted w-3">{setIdx + 1}</span>
+                  {/if}
                   <span class="text-xs text-ink-muted font-medium">Set</span>
                 </div>
 
                 <!-- Read-Only Weight & Rep Pills -->
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 {set.completed ? '' : 'opacity-60 grayscale'}">
                   <span class="text-sm font-bold text-ink-primary bg-white px-3.5 py-2 rounded-2xl">{set.weight} kg</span>
                   <span class="text-sm font-bold text-ink-primary bg-white px-3.5 py-2 rounded-2xl">{set.reps} reps</span>
-                  <div class="w-8 h-8 rounded-full bg-pastel-mintSoft text-pastel-mintText flex items-center justify-center">
-                    <Check class="w-4 h-4 stroke-[3]" />
-                  </div>
+                  
+                  {#if set.completed}
+                    <div class="w-8 h-8 rounded-full bg-pastel-mintSoft text-pastel-mintText flex items-center justify-center">
+                      <Check class="w-4 h-4 stroke-[3]" />
+                    </div>
+                  {:else}
+                    <!-- Skipped / Incomplete Set Marker -->
+                    <div class="w-8 h-8 rounded-full bg-transparent border-2 border-slate-200 flex items-center justify-center">
+                      <div class="w-2.5 h-0.5 bg-slate-300 rounded-full"></div>
+                    </div>
+                  {/if}
                 </div>
               </TimelineItem>
             {/each}
