@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gym-tracker-v6';
+const CACHE_NAME = 'gym-tracker-v7';
 
 // 1. Install & Cache offline
 self.addEventListener('install', (e) => {
