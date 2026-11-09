@@ -33,7 +33,7 @@
   }
 </script>
 
-<div class="min-h-screen bg-canvas sm:bg-neutral-300 flex justify-center items-center sm:p-6 antialiased select-none font-sans overflow-x-hidden relative">
+<div class="h-dvh sm:min-h-screen bg-canvas sm:bg-neutral-300 flex justify-center items-center sm:p-6 antialiased select-none font-sans overflow-x-hidden relative">
 
   {#if $router === 'dashboard'}
     <div in:fly={{ x: -40, duration: 200, easing: cubicOut }} class="w-full flex justify-center">
