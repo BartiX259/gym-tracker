@@ -58,9 +58,9 @@
   {/if}
 
   <!-- App Update Confirmation BottomSheet -->
-  <div class="w-full max-w-none sm:max-w-[440px] absolute inset-y-0 pointer-events-none z-50 overflow-hidden sm:rounded-[44px]">
-    <div class="pointer-events-auto h-full">
-      <BottomSheet
+  {#if showUpdateModal}
+    <div class="w-full max-w-none sm:max-w-[440px] absolute inset-y-0 z-50 overflow-hidden sm:rounded-[44px]">
+      <BottomSheet 
         open={showUpdateModal}
         subtitle="New Version"
         title="Update Ready"
@@ -71,6 +71,6 @@
         on:confirm={applyUpdate}
       />
     </div>
-  </div>
+  {/if}
 
 </div>
