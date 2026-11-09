@@ -3,24 +3,30 @@
 @theme {
   --font-sans: "Plus Jakarta Sans", sans-serif;
 
-  /* Our Custom Palette */
-  --color-canvas: #F4F5F7;
-  
-  --color-ink-primary: #121417;
-  --color-ink-muted: #7E8695;
+  /* Surfaces & Text */
+  --color-canvas: #16181D;              /* Softer charcoal night canvas */
+  --color-white: #20232B;               /* Soft slate cards */
+  --color-ink-primary: #E6E9F0;         /* Soft chalky white text */
+  --color-ink-muted: #7D8495;           /* Slate muted text */
 
-  --color-pastel-mint: #86EFAC;
-  --color-pastel-mintSoft: #DCFCE7;
-  --color-pastel-mintText: #15803D;
+  /* Chalky Sage/Mint */
+  --color-pastel-mint: #93D8B2;         /* Muted sage bar */
+  --color-pastel-mintSoft: #1E3128;     /* Dark sage tint */
+  --color-pastel-mintText: #A6E5C3;     /* Chalky soft mint text */
 
-  --color-pastel-lavender: #C4B5FD;
-  --color-pastel-lavenderSoft: #EDE9FE;
-  --color-pastel-lavenderText: #6D28D9;
+  /* Chalky Lilac */
+  --color-pastel-lavender: #BDB4E6;     /* Soft lilac bar */
+  --color-pastel-lavenderSoft: #2B263F; /* Muted purple tint */
+  --color-pastel-lavenderText: #D2CBF7; /* Chalky lavender text */
 
-  --color-pastel-slateTrack: #CBD5E1;
-  
-  --color-pastel-coralSoft: #FEE2E2;
-  --color-pastel-coralText: #B91C1C;
+  /* Structural & Destructive */
+  --color-pastel-slateTrack: #303542;   /* Soft timeline line */
+  --color-pastel-coralSoft: #362125;    /* Muted berry bg */
+  --color-pastel-coralText: #EFA2A2;    /* Soft peach/coral text */
+
+  /* Utilities */
+  --color-slate-200: #313745;           
+  --color-neutral-300: #0F1014;         
 }
 
 /* App-like behaviors */
