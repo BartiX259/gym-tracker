@@ -134,7 +134,7 @@
         on:pointerdown={() => startHold(exercise)}
         on:pointerup={cancelHold}
         on:pointerleave={cancelHold}
-        class="w-full p-5 rounded-3xl transition-all duration-200 cursor-pointer flex items-center justify-between {holdingExercise === exercise ? 'bg-rose-50 scale-[0.98] text-rose-600' : 'bg-white active:scale-[0.99] text-ink-primary'}"
+        class="w-full p-5 rounded-3xl transition-all duration-200 cursor-pointer flex items-center justify-between {holdingExercise === exercise ? 'bg-rose-950/40 scale-[0.98] text-pastel-coralText' : 'bg-white active:scale-[0.99] text-ink-primary'}"
         role="button"
         tabindex="0"
       >

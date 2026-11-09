@@ -289,7 +289,7 @@
               on:pointerup={cancelExerciseHold}
               on:pointerleave={cancelExerciseHold}
               on:pointercancel={cancelExerciseHold}
-              class="cursor-pointer select-none py-1 pr-3 rounded-2xl transition-all duration-200 {holdingExerciseIndex === exIdx ? 'scale-105 text-rose-600' : 'text-ink-primary'}"
+              class="cursor-pointer select-none py-1 pr-3 rounded-2xl transition-all duration-200 {holdingExerciseIndex === exIdx ? 'scale-105 text-pastel-coralText' : 'text-ink-primary'}"
               role="button"
               tabindex="0"
             >
@@ -327,7 +327,7 @@
               >
                 <!-- Left Touch Area -->
                 <div 
-                  class="flex items-baseline gap-3 cursor-pointer py-1.5 pr-4 rounded-xl transition-all duration-200 {holdingKey === `${exIdx}-${setIdx}` ? 'scale-105 text-rose-600' : ''}"
+                  class="flex items-baseline gap-3 cursor-pointer py-1.5 pr-4 rounded-xl transition-all duration-200 {holdingKey === `${exIdx}-${setIdx}` ? 'scale-105 text-pastel-coralText' : ''}"
                   on:pointerdown={() => startSetHold(exIdx, setIdx, exercise.name)}
                   on:pointerup={cancelSetHold}
                   on:pointerleave={cancelSetHold}

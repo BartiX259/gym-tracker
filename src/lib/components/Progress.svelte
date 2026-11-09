@@ -106,7 +106,7 @@
           plugins: { tooltip: { cornerRadius: 10, padding: 8 } },
           scales: {
             x: { grid: { display: false }, border: { display: false } },
-            y: { grid: { color: '#F1F5F9' }, border: { display: false }, beginAtZero: true }
+            y: { grid: { color: '#262A33' }, border: { display: false }, beginAtZero: true }
           }
         }
       });
@@ -133,7 +133,7 @@
           plugins: { tooltip: { cornerRadius: 10, padding: 8 } },
           scales: {
             x: { grid: { display: false }, border: { display: false } },
-            y: { grid: { color: '#F1F5F9' }, border: { display: false }, beginAtZero: true }
+            y: { grid: { color: '#262A33' }, border: { display: false }, beginAtZero: true }
           }
         }
       });
@@ -154,11 +154,11 @@
           datasets: [{
             data: logs.map(l => l.est1RM),
             borderColor: '#86EFAC',
-            backgroundColor: '#DCFCE7',
+            backgroundColor: 'rgba(74, 222, 128, 0.12)',
             tension: 0.35,
             pointRadius: 4.5,
             pointBackgroundColor: '#15803D',
-            pointBorderColor: '#FFFFFF',
+            pointBorderColor: '#181B20',
             pointBorderWidth: 2
           }]
         },
@@ -168,7 +168,7 @@
           plugins: { tooltip: { cornerRadius: 10, padding: 8 } },
           scales: {
             x: { grid: { display: false }, border: { display: false } },
-            y: { grid: { color: '#F1F5F9' }, border: { display: false } }
+            y: { grid: { color: '#262A33' }, border: { display: false } }
           }
         }
       });
@@ -184,11 +184,11 @@
           datasets: [{
             data: logs.map(l => l.weight),
             borderColor: '#93C5FD',
-            backgroundColor: '#DBEAFE',
+            backgroundColor: 'rgba(96, 165, 250, 0.12)',
             tension: 0.35,
             pointRadius: 4.5,
             pointBackgroundColor: '#1D4ED8',
-            pointBorderColor: '#FFFFFF',
+            pointBorderColor: '#181B20',
             pointBorderWidth: 2
           }]
         },
@@ -198,7 +198,7 @@
           plugins: { tooltip: { cornerRadius: 10, padding: 8 } },
           scales: {
             x: { grid: { display: false }, border: { display: false } },
-            y: { grid: { color: '#F1F5F9' }, border: { display: false } }
+            y: { grid: { color: '#262A33' }, border: { display: false } }
           }
         }
       });
@@ -214,11 +214,11 @@
           datasets: [{
             data: logs.map(l => l.volume || (l.weight * l.reps * 3)),
             borderColor: '#C4B5FD',
-            backgroundColor: '#EDE9FE',
+            backgroundColor: 'rgba(167, 139, 250, 0.12)',
             tension: 0.35,
             pointRadius: 4.5,
             pointBackgroundColor: '#6D28D9',
-            pointBorderColor: '#FFFFFF',
+            pointBorderColor: '#181B20',
             pointBorderWidth: 2
           }]
         },
@@ -228,7 +228,7 @@
           plugins: { tooltip: { cornerRadius: 10, padding: 8 } },
           scales: {
             x: { grid: { display: false }, border: { display: false } },
-            y: { grid: { color: '#F1F5F9' }, border: { display: false } }
+            y: { grid: { color: '#262A33' }, border: { display: false } }
           }
         }
       });
@@ -296,8 +296,8 @@
 
       <!-- Pull-Up Pagination Dots -->
       <div class="flex justify-center items-center gap-1.5 pt-0.5">
-        <div class="h-1.5 rounded-full transition-all duration-200 {pullupActiveSlide === 0 ? 'w-5 bg-ink-primary' : 'w-1.5 bg-slate-300'}"></div>
-        <div class="h-1.5 rounded-full transition-all duration-200 {pullupActiveSlide === 1 ? 'w-5 bg-ink-primary' : 'w-1.5 bg-slate-300'}"></div>
+        <div class="h-1.5 rounded-full transition-all duration-200 {pullupActiveSlide === 0 ? 'w-5 bg-ink-primary' : 'w-1.5 bg-pastel-slateTrack'}"></div>
+        <div class="h-1.5 rounded-full transition-all duration-200 {pullupActiveSlide === 1 ? 'w-5 bg-ink-primary' : 'w-1.5 bg-pastel-slateTrack'}"></div>
       </div>
     </section>
 
@@ -371,9 +371,9 @@
 
       <!-- Exercise Carousel Pagination Dots (3 Dots) -->
       <div class="flex justify-center items-center gap-1.5 pt-0.5">
-        <div class="h-1.5 rounded-full transition-all duration-200 {exerciseActiveSlide === 0 ? 'w-5 bg-ink-primary' : 'w-1.5 bg-slate-300'}"></div>
-        <div class="h-1.5 rounded-full transition-all duration-200 {exerciseActiveSlide === 1 ? 'w-5 bg-ink-primary' : 'w-1.5 bg-slate-300'}"></div>
-        <div class="h-1.5 rounded-full transition-all duration-200 {exerciseActiveSlide === 2 ? 'w-5 bg-ink-primary' : 'w-1.5 bg-slate-300'}"></div>
+        <div class="h-1.5 rounded-full transition-all duration-200 {exerciseActiveSlide === 0 ? 'w-5 bg-ink-primary' : 'w-1.5 bg-pastel-slateTrack'}"></div>
+        <div class="h-1.5 rounded-full transition-all duration-200 {exerciseActiveSlide === 1 ? 'w-5 bg-ink-primary' : 'w-1.5 bg-pastel-slateTrack'}"></div>
+        <div class="h-1.5 rounded-full transition-all duration-200 {exerciseActiveSlide === 2 ? 'w-5 bg-ink-primary' : 'w-1.5 bg-pastel-slateTrack'}"></div>
       </div>
     </section>
 

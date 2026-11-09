@@ -5,7 +5,7 @@
   export let isHolding = false;
   export let isPR = false;
   export let isAnimatingPR = false;
-  export let hollowBorder = 'border-slate-300';
+  export let hollowBorder = 'border-pastel-slateTrack';
   export let gap = '16px'; 
 </script>
 
@@ -14,14 +14,14 @@
   {#if completed}
     <div 
       class="absolute -left-6 top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full z-10 transition-all duration-200 
-        {isHolding ? 'scale-140 bg-rose-500 ring-4 ring-rose-200' : ''}
+        {isHolding ? 'scale-140 bg-rose-500 ring-4 ring-rose-900/50' : ''}
         {isPR ? 'bg-amber-400' : 'bg-emerald-500'}
         {isAnimatingPR ? 'animate-pr-pop' : ''}" 
     ></div>
   {:else}
     <div 
       class="absolute -left-6 top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full bg-canvas z-10 transition-all duration-200 
-        {isHolding ? 'scale-140 border-2 border-rose-500 bg-rose-100 ring-4 ring-rose-200' : `border-2 ${hollowBorder}`}"
+        {isHolding ? 'scale-140 border-2 border-rose-500 bg-rose-950/60 ring-4 ring-rose-900/50' : `border-2 ${hollowBorder}`}"
     ></div>
   {/if}
 

@@ -21,12 +21,12 @@
 
   /* Structural & Destructive */
   --color-pastel-slateTrack: #303542;   /* Soft timeline line */
-  --color-pastel-coralSoft: #362125;    /* Muted berry bg */
-  --color-pastel-coralText: #EFA2A2;    /* Soft peach/coral text */
+  --color-pastel-coralSoft: #3F151B;    /* Deep glowing wine */
+  --color-pastel-coralText: #FB7185;    /* Punchy rose-400 */
 
   /* Utilities */
-  --color-slate-200: #313745;           
-  --color-neutral-300: #0F1014;         
+  --color-slate-200: #313745;
+  --color-neutral-300: #0F1014;
 }
 
 /* App-like behaviors */

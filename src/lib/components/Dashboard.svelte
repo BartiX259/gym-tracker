@@ -259,15 +259,15 @@ function startWorkout() {
               on:pointerdown={() => startSessionHold(workout)}
               on:pointerup={cancelSessionHold}
               on:pointerleave={cancelSessionHold}
-              class="w-full p-4 rounded-3xl flex items-center justify-between cursor-pointer select-none transition-all duration-200 {holdingSessionId === workout.id ? 'bg-rose-50 scale-[0.98]' : 'bg-white active:scale-[0.99]'}"
+              class="w-full p-4 rounded-3xl flex items-center justify-between cursor-pointer select-none transition-all duration-200 {holdingSessionId === workout.id ? 'bg-rose-950/40 scale-[0.98]' : 'bg-white active:scale-[0.99]'}"
               role="button"
               tabindex="0"
             >
               <div>
-                <p class="font-bold text-sm leading-tight transition-colors {holdingSessionId === workout.id ? 'text-rose-600' : 'text-ink-primary'}">
+                <p class="font-bold text-sm leading-tight transition-colors {holdingSessionId === workout.id ? 'text-pastel-coralText' : 'text-ink-primary'}">
                   {timeAgo(workout.startTime || workout.id)}
                 </p>
-                <p class="text-xs font-medium mt-0.5 transition-colors {holdingSessionId === workout.id ? 'text-rose-500' : 'text-ink-muted'}">{workout.date} • {workout.exerciseCount} exercises</p>
+                <p class="text-xs font-medium mt-0.5 transition-colors {holdingSessionId === workout.id ? 'text-ink-muted' : 'text-ink-muted'}">{workout.date} • {workout.exerciseCount} exercises</p>
               </div>
               <ChevronRight class="w-5 h-5 text-ink-muted stroke-[2]" />
             </div>
@@ -286,7 +286,7 @@ function startWorkout() {
             on:pointerdown={startResumeHold}
             on:pointerup={cancelResumeHold}
             on:pointerleave={cancelResumeHold}
-            class="w-full p-4 rounded-3xl flex items-center justify-between font-bold text-sm tracking-wide transition-all duration-200 {isHoldingResume ? 'bg-rose-50 text-rose-600 scale-[0.98]' : 'bg-pastel-mintSoft text-pastel-mintText active:scale-[0.98]'}"
+            class="w-full p-4 rounded-3xl flex items-center justify-between font-bold text-sm tracking-wide transition-all duration-200 {isHoldingResume ? 'bg-rose-950/40 text-pastel-coralText scale-[0.98]' : 'bg-pastel-mintSoft text-pastel-mintText active:scale-[0.98]'}"
           >
             {#if $activeWorkoutStore}
               <div class="flex items-center gap-2">

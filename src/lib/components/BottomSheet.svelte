@@ -26,7 +26,7 @@
   <!-- Clean Dimmed Backdrop (Tap to Cancel) -->
   <div 
     transition:fade={{ duration: 180 }}
-    class="absolute inset-0 bg-ink-primary/35 z-50 cursor-pointer"
+    class="absolute inset-0 bg-black/60 z-50 cursor-pointer"
     on:click={close}
     role="button"
     tabindex="0"
