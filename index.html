@@ -25,7 +25,17 @@
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js');
+          navigator.serviceWorker.register('/sw.js').then((reg) => {
+            reg.addEventListener('updatefound', () => {
+              const worker = reg.installing;
+              worker.addEventListener('statechange', () => {
+                // If a new worker is installed while an old one exists, notify the app!
+                if (worker.state === 'installed' && navigator.serviceWorker.controller) {
+                  window.dispatchEvent(new CustomEvent('sw-update-ready', { detail: reg }));
+                }
+              });
+            });
+          });
         });
       }
     </script>
