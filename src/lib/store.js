@@ -1,30 +1,106 @@
-import { writable, get } from 'svelte/store';
+import { writable, get, derived } from 'svelte/store';
 
-// Helper: syncs any Svelte store directly to localStorage
+// ==========================================
+// 1. STORAGE & DATE HELPERS
+// ==========================================
+
 function createPersistedStore(key, initialValue) {
-  const saved = localStorage.getItem(key);
+  const saved = typeof localStorage !== 'undefined' ? localStorage.getItem(key) : null;
   const data = saved ? JSON.parse(saved) : initialValue;
   const store = writable(data);
 
   store.subscribe(val => {
-    localStorage.setItem(key, JSON.stringify(val));
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(key, JSON.stringify(val));
+    }
   });
 
   return store;
 }
 
-// 1. Current Cycle & Pull-ups (Fresh Start: Cycle 1, 0 reps)
+// Returns local date string formatted as "YYYY-MM-DD"
+function getTodayKey() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+// Generates the last 7 calendar days in chronological order ending with today
+function getLast7Days() {
+  const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const days = [];
+
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setHours(12, 0, 0, 0);
+    d.setDate(d.getDate() - i);
+
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const key = `${year}-${month}-${day}`;
+
+    days.push({
+      key,
+      day: dayLabels[d.getDay()], // e.g. Wed, Thu, Fri, Sat, Sun, Mon, Tue
+      isToday: i === 0
+    });
+  }
+  return days;
+}
+
+// ==========================================
+// 2. CORE DATA STORES
+// ==========================================
+
+// Current Cycle
 export const cycleStore = createPersistedStore('gym_cycle', { current: 1 });
 
-export const pullupStore = createPersistedStore('gym_pullups', {
+// Historical log of daily pull-ups: { "YYYY-MM-DD": count }
+export const dailyPullupsMap = createPersistedStore('gym_daily_pullups_map', {});
+
+// Main Pull-Up Config & Counters
+const defaultPullupState = {
   today: 0,
   cycle: 0,
   dailyTarget: 12,
   cycleTarget: 60,
   increment: 3
+};
+
+const savedPullupsRaw = typeof localStorage !== 'undefined' ? localStorage.getItem('gym_pullups') : null;
+const initialPullups = savedPullupsRaw ? JSON.parse(savedPullupsRaw) : defaultPullupState;
+
+// Check date on boot: if it's a new day, reset today's counter to 0 (or today's existing log)
+const todayKey = getTodayKey();
+const lastActiveDate = typeof localStorage !== 'undefined' ? localStorage.getItem('gym_last_active_date') : null;
+
+if (lastActiveDate !== todayKey) {
+  const mapData = typeof localStorage !== 'undefined' ? JSON.parse(localStorage.getItem('gym_daily_pullups_map') || '{}') : {};
+  initialPullups.today = mapData[todayKey] || 0;
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem('gym_last_active_date', todayKey);
+  }
+}
+
+export const pullupStore = createPersistedStore('gym_pullups', initialPullups);
+
+// Derived store providing the 7-day window ending with today
+export const dailyPullupsStore = derived(dailyPullupsMap, ($map) => {
+  const days = getLast7Days();
+  return days.map(d => ({
+    day: d.day,
+    count: $map[d.key] || 0,
+    isToday: d.isToday
+  }));
 });
 
-// 2. Exercises Library (Clean starter staples)
+// Cycles History
+export const cycleHistoryStore = createPersistedStore('gym_cycle_history', []);
+
+// Exercises Library
 export const exercisesStore = createPersistedStore('gym_exercises', [
   'Bench Press',
   'Incline DB Press',
@@ -36,47 +112,43 @@ export const exercisesStore = createPersistedStore('gym_exercises', [
   'Romanian Deadlift (RDL)'
 ]);
 
-// 3. Workouts History (Empty)
+// Workouts History
 export const workoutsStore = createPersistedStore('gym_workouts', []);
 
-// 4. Exercise Logs (Empty)
+// Exercise PR & Progression Logs
 export const exerciseLogsStore = createPersistedStore('gym_exercise_logs', {});
 
-// 5. Pull-Up History Stores (Empty past cycles, 0 for current days)
-export const cycleHistoryStore = createPersistedStore('gym_cycle_history', []);
-
-export const dailyPullupsStore = createPersistedStore('gym_daily_pullups', [
-  { day: 'Mon', count: 0 },
-  { day: 'Tue', count: 0 },
-  { day: 'Wed', count: 0 },
-  { day: 'Thu', count: 0 },
-  { day: 'Fri', count: 0 },
-  { day: 'Sat', count: 0 },
-  { day: 'Sun', count: 0 }
-]);
-
-// 6. Active Workout State
+// Active Workout State
 export const activeWorkoutStore = createPersistedStore('gym_active_workout', null);
 export const viewingWorkoutStore = writable(null);
 
-// 7. Navigation Router
+// ==========================================
+// 3. NAVIGATION ROUTER
+// ==========================================
+
 function createRouterStore() {
-  const initial = window.location.hash.replace('#', '') || 'dashboard';
+  const initial = typeof window !== 'undefined' ? window.location.hash.replace('#', '') || 'dashboard' : 'dashboard';
   const { subscribe, set } = writable(initial);
 
-  window.addEventListener('popstate', (e) => {
-    const screen = e.state?.screen || window.location.hash.replace('#', '') || 'dashboard';
-    set(screen);
-  });
+  if (typeof window !== 'undefined') {
+    window.addEventListener('popstate', (e) => {
+      const screen = e.state?.screen || window.location.hash.replace('#', '') || 'dashboard';
+      set(screen);
+    });
+  }
 
   return {
     subscribe,
     navigate: (screen) => {
-      window.history.pushState({ screen }, '', `#${screen}`);
+      if (typeof window !== 'undefined') {
+        window.history.pushState({ screen }, '', `#${screen}`);
+      }
       set(screen);
     },
     back: () => {
-      window.history.back();
+      if (typeof window !== 'undefined') {
+        window.history.back();
+      }
     }
   };
 }
@@ -84,7 +156,34 @@ function createRouterStore() {
 export const router = createRouterStore();
 
 // ==========================================
-// CONNECTED ACTION HELPERS
+// 4. AUTOMATIC DAILY RESET CHECK
+// ==========================================
+
+function checkDailyReset() {
+  const currentKey = getTodayKey();
+  const lastDate = localStorage.getItem('gym_last_active_date');
+
+  if (lastDate !== currentKey) {
+    localStorage.setItem('gym_last_active_date', currentKey);
+    const mapData = get(dailyPullupsMap) || {};
+    pullupStore.update(p => ({
+      ...p,
+      today: mapData[currentKey] || 0
+    }));
+  }
+}
+
+// Check rollover whenever switching back into the app
+if (typeof window !== 'undefined') {
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      checkDailyReset();
+    }
+  });
+}
+
+// ==========================================
+// 5. CONNECTED ACTIONS
 // ==========================================
 
 export function getGhostStats(exerciseName) {
@@ -93,26 +192,25 @@ export function getGhostStats(exerciseName) {
     const last = logs[logs.length - 1];
     return { weight: last.weight, reps: last.reps };
   }
-  return { weight: 60, reps: 8 }; // Fallback defaults
+  return { weight: 60, reps: 8 };
 }
 
 export function adjustPullups(delta) {
-  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const todayDay = days[new Date().getDay()];
+  checkDailyReset();
+  const currentKey = getTodayKey();
 
-  pullupStore.update(p => {
-    const newToday = Math.max(0, p.today + delta);
-    const newCycle = Math.max(0, p.cycle + delta);
-    return { ...p, today: newToday, cycle: newCycle };
+  // 1. Update persistent date map
+  dailyPullupsMap.update(map => {
+    const currentToday = map[currentKey] || 0;
+    const newCount = Math.max(0, currentToday + delta);
+    return { ...map, [currentKey]: newCount };
   });
 
-  dailyPullupsStore.update(list => {
-    return list.map(item => {
-      if (item.day === todayDay) {
-        return { ...item, count: Math.max(0, item.count + delta) };
-      }
-      return item;
-    });
+  // 2. Update today & cycle counters
+  pullupStore.update(p => {
+    const newToday = Math.max(0, (p.today || 0) + delta);
+    const newCycle = Math.max(0, (p.cycle || 0) + delta);
+    return { ...p, today: newToday, cycle: newCycle };
   });
 }
 
@@ -127,7 +225,6 @@ export function advanceCycleAction() {
 
   cycleStore.update(c => ({ current: c.current + 1 }));
   pullupStore.update(p => ({ ...p, today: 0, cycle: 0 }));
-  dailyPullupsStore.update(list => list.map(d => ({ ...d, count: 0 })));
 }
 
 export function finishCurrentWorkout() {
@@ -138,6 +235,7 @@ export function finishCurrentWorkout() {
   const dayName = now.toLocaleDateString('en-US', { weekday: 'long' });
   const dateLabel = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   const workoutId = Date.now();
+  const startTime = active.startTime || workoutId;
 
   let completedExerciseCount = 0;
 
@@ -181,6 +279,7 @@ export function finishCurrentWorkout() {
     ...list,
     {
       id: workoutId,
+      startTime,
       cycle: active.cycle,
       date: dayName,
       dateLabel,

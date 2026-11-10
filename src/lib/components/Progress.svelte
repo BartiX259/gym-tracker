@@ -82,7 +82,42 @@
     return null;
   }
 
-  // --- 1. Pull-Up Charts (Rendered Once on Mount) ---
+  // --- 1. Pull-Up Charts ---
+  function updateDailyChart() {
+    if (!pullupDailyCanvas) return;
+    if (pullupDailyChart) pullupDailyChart.destroy();
+
+    pullupDailyChart = new Chart(pullupDailyCanvas, {
+      type: 'bar',
+      data: {
+        labels: $dailyPullupsStore.map(d => d.day),
+        datasets: [{
+          data: $dailyPullupsStore.map(d => d.count),
+          // Highlights "Today" with an emerald/mint accent or pastel lilac
+          backgroundColor: $dailyPullupsStore.map(d => {
+            if (d.day === 'Today') return '#4ADE80'; // Bright distinct mint for Today
+            return d.count >= $pullupStore.dailyTarget ? '#86EFAC' : '#A78BFA';
+          }),
+          borderRadius: 8,
+          borderSkipped: false,
+          barThickness: 20
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { tooltip: { cornerRadius: 10, padding: 8 } },
+        scales: {
+          x: { grid: { display: false }, border: { display: false } },
+          y: { grid: { color: '#262A33' }, border: { display: false }, beginAtZero: true }
+        }
+      }
+    });
+  }
+  // Reactively re-draw the daily chart whenever numbers change
+  $: if (pullupDailyCanvas && $dailyPullupsStore) {
+    updateDailyChart();
+  }
   function renderPullupCharts() {
     // Slide 1: Cycle History
     if (pullupCycleCanvas) {
@@ -271,7 +306,17 @@
         on:scroll={(e) => pullupActiveSlide = Math.round(e.currentTarget.scrollLeft / e.currentTarget.clientWidth)}
         class="flex gap-3 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-1"
       >
-        <!-- Slide 1: Cycle History -->
+        <!-- Slide 1: Daily Breakdown -->
+        <div class="w-full flex-shrink-0 snap-center space-y-1.5">
+          <div class="flex justify-between items-baseline px-1">
+            <span class="text-base font-semibold text-ink-primary">Daily Breakdown</span>
+            <span class="text-base font-bold text-ink-primary">Goal: 12 <span class="text-ink-muted font-normal text-xs">/ day</span></span>
+          </div>
+          <div class="w-full bg-white p-4 rounded-3xl h-36 flex items-center justify-center">
+            <canvas bind:this={pullupDailyCanvas}></canvas>
+          </div>
+        </div>
+        <!-- Slide 2: Cycle History -->
         <div class="w-full flex-shrink-0 snap-center space-y-1.5">
           <div class="flex justify-between items-baseline px-1">
             <span class="text-base font-semibold text-ink-primary">By Cycle</span>
@@ -279,17 +324,6 @@
           </div>
           <div class="w-full bg-white p-4 rounded-3xl h-36 flex items-center justify-center">
             <canvas bind:this={pullupCycleCanvas}></canvas>
-          </div>
-        </div>
-
-        <!-- Slide 2: Daily Breakdown -->
-        <div class="w-full flex-shrink-0 snap-center space-y-1.5">
-          <div class="flex justify-between items-baseline px-1">
-            <span class="text-base font-semibold text-ink-primary">Daily Breakdown</span>
-            <span class="text-base font-bold text-emerald-600">Goal: 12 <span class="text-ink-muted font-normal text-xs">/ day</span></span>
-          </div>
-          <div class="w-full bg-white p-4 rounded-3xl h-36 flex items-center justify-center">
-            <canvas bind:this={pullupDailyCanvas}></canvas>
           </div>
         </div>
       </div>
