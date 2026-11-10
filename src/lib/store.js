@@ -192,7 +192,7 @@ export function getGhostStats(exerciseName) {
     const last = logs[logs.length - 1];
     return { weight: last.weight, reps: last.reps };
   }
-  return { weight: 60, reps: 8 };
+  return { weight: 0, reps: 0 };
 }
 
 export function adjustPullups(delta) {

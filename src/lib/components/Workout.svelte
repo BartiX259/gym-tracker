@@ -147,9 +147,23 @@
       return w;
     });
   }
-  function updateSet(exerciseIndex, setIndex, field, value) {
+  function updateSet(exerciseIndex, setIndex, field, rawValue) {
+    const cleanStr = String(rawValue).replace(',', '.');
+    const parsed = cleanStr === '' ? '' : (parseFloat(cleanStr) || 0);
+
     activeWorkoutStore.update(w => {
-      w.exercises[exerciseIndex].sets[setIndex][field] = Number(value) || 0;
+      const exercise = w.exercises[exerciseIndex];
+      const currentSet = exercise.sets[setIndex];
+      currentSet[field] = parsed;
+
+      // Cascade weight to subsequent uncompleted sets
+      if (field === 'weight') {
+        for (let i = setIndex + 1; i < exercise.sets.length; i++) {
+          if (!exercise.sets[i].completed) {
+            exercise.sets[i].weight = parsed;
+          }
+        }
+      }
       return w;
     });
   }
@@ -345,15 +359,20 @@
                     </span>
                   {/if}
 
-                  <span class="text-xs font-medium text-ink-muted">
-                    {exercise.lastWeight} × {exercise.lastReps}
-                  </span>
+                  {#if exercise.lastWeight != 0 && exercise.lastReps != 0}
+                    <span class="text-xs font-medium text-ink-muted">
+                      {exercise.lastWeight} × {exercise.lastReps}
+                    </span>
+                  {:else}
+                    <span class="text-xs font-medium text-ink-muted/40">—</span>
+                  {/if}
                 </div>
 
                 <!-- Inputs & Checkmark -->
                 <div class="flex items-center gap-2">
                   <input 
-                    type="number"
+                    type="text"
+                    inputmode="decimal"
                     step="0.5"
                     disabled={set.completed}
                     value={set.weight}
@@ -366,7 +385,8 @@
                   />
                   
                   <input 
-                    type="number"
+                    type="text"
+                    inputmode="decimal"
                     disabled={set.completed}
                     value={set.reps}
                     on:input={(e) => updateSet(exIdx, setIdx, 'reps', e.currentTarget.value)}
