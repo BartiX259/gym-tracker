@@ -307,7 +307,7 @@
         class="flex gap-3 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-1"
       >
         <!-- Slide 1: Daily Breakdown -->
-        <div class="w-full flex-shrink-0 snap-center space-y-1.5">
+        <div class="w-full flex-shrink-0 snap-center snap-always space-y-1.5">
           <div class="flex justify-between items-baseline px-1">
             <span class="text-base font-semibold text-ink-primary">Daily Breakdown</span>
             <span class="text-base font-bold text-ink-primary">Goal: 12 <span class="text-ink-muted font-normal text-xs">/ day</span></span>
@@ -317,7 +317,7 @@
           </div>
         </div>
         <!-- Slide 2: Cycle History -->
-        <div class="w-full flex-shrink-0 snap-center space-y-1.5">
+        <div class="w-full flex-shrink-0 snap-center snap-always space-y-1.5">
           <div class="flex justify-between items-baseline px-1">
             <span class="text-base font-semibold text-ink-primary">By Cycle</span>
             <span class="text-base font-bold text-ink-primary">{$pullupStore.cycle} <span class="text-ink-muted font-normal text-xs">this cycle</span></span>
@@ -370,7 +370,7 @@
         class="flex gap-3 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-1"
       >
         <!-- Slide 1: Estimated 1RM -->
-        <div class="w-full flex-shrink-0 snap-center space-y-1.5">
+        <div class="w-full flex-shrink-0 snap-center snap-always space-y-1.5">
           <div class="flex justify-between items-baseline px-1">
             <span class="text-base font-semibold text-ink-primary">Estimated 1RM</span>
             <span class="text-base font-bold text-emerald-600">Peak: {best1RM} <span class="text-ink-muted font-normal text-xs">kg</span></span>
@@ -381,7 +381,7 @@
         </div>
 
         <!-- Slide 2: Working Weight Progression -->
-        <div class="w-full flex-shrink-0 snap-center space-y-1.5">
+        <div class="w-full flex-shrink-0 snap-center snap-always space-y-1.5">
           <div class="flex justify-between items-baseline px-1">
             <span class="text-base font-semibold text-ink-primary">Working Weight</span>
             <span class="text-base font-bold text-blue-600">Peak: {bestWeight} <span class="text-ink-muted font-normal text-xs">kg</span></span>
@@ -392,7 +392,7 @@
         </div>
 
         <!-- Slide 3: Session Volume / Tonnage -->
-        <div class="w-full flex-shrink-0 snap-center space-y-1.5">
+        <div class="w-full flex-shrink-0 snap-center snap-always space-y-1.5">
           <div class="flex justify-between items-baseline px-1">
             <span class="text-base font-semibold text-ink-primary">Total Volume</span>
             <span class="text-base font-bold text-violet-600">Peak: {bestVolume} <span class="text-ink-muted font-normal text-xs">kg</span></span>

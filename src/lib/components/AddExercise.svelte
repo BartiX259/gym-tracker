@@ -102,7 +102,7 @@
 </script>
 
 <!-- Mobile Viewport Container -->
-<div class="w-full max-w-none sm:max-w-[440px] bg-canvas min-h-screen sm:min-h-0 sm:h-[860px] sm:rounded-[44px] sm:shadow-2xl flex flex-col justify-between p-6 sm:p-7 relative overflow-hidden">
+<div class="w-full max-w-none sm:max-w-[440px] bg-canvas h-dvh sm:h-[860px] sm:rounded-[44px] sm:shadow-2xl flex flex-col justify-between p-6 sm:p-7 relative overflow-hidden">
 
   <!-- Top Row: Back button + Search Bar Inline -->
   <header class="flex items-center gap-3 pt-2">
@@ -125,7 +125,7 @@
   </header>
 
   <!-- Scrollable Exercise List -->
-  <main class="flex-1 overflow-y-auto no-scrollbar space-y-3 py-4 my-auto">
+  <main class="flex-1 min-h-0 overflow-y-auto no-scrollbar space-y-3 py-3">
 
     <!-- 1. Matching Existing Exercises First -->
     {#each filteredExercises as exercise}

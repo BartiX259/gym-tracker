@@ -13,7 +13,7 @@
   } from '../store.js';
   import { ChevronsRight, Settings, ChevronRight, Play, TrendingUp } from 'lucide-svelte';
   import BottomSheet from './BottomSheet.svelte';
-  import TimelineItem from './TimelineItem.svelte'
+  import TimelineItem from './TimelineItem.svelte';
 
   let showAdvanceModal = false;
   let showSettingsModal = false;
@@ -47,7 +47,7 @@
   $: cyclePercent = Math.min(100, Math.round(($pullupStore.cycle / $pullupStore.cycleTarget) * 100));
   $: currentCycleWorkouts = $workoutsStore.filter(w => w.cycle === $cycleStore.current);
 
-  // Stepper handlers now use adjustPullups:
+  // Stepper handlers
   function addPullups() {
     adjustPullups($pullupStore.increment);
   }
@@ -56,13 +56,13 @@
     adjustPullups(-$pullupStore.increment);
   }
 
-  // Advance Cycle now uses advanceCycleAction:
+  // Advance Cycle
   function confirmAdvance() {
     advanceCycleAction();
     showAdvanceModal = false;
   }
 
-  // Delete session now cleans up the graphs too:
+  // Delete session
   function confirmDeleteSession() {
     if (sessionToDelete) {
       deleteWorkoutSession(sessionToDelete.id);
@@ -71,7 +71,7 @@
     }
   }
 
-function startWorkout() {
+  function startWorkout() {
     if (!$activeWorkoutStore) {
       activeWorkoutStore.set({
         startTime: Date.now(),
@@ -84,6 +84,7 @@ function startWorkout() {
       router.navigate('workout');
     }
   }
+
   // --- Long-Press Session Deletion ---
   let showDeleteSessionModal = false;
   let sessionToDelete = null;
@@ -118,7 +119,6 @@ function startWorkout() {
   let resumeHoldTimer = null;
 
   function startResumeHold() {
-    // Only hold to discard if a workout is actually running
     if (!$activeWorkoutStore) return;
     isHoldingResume = true;
     resumeHoldTimer = setTimeout(() => {
@@ -136,6 +136,7 @@ function startWorkout() {
     discardActiveWorkout();
     showDiscardModal = false;
   }
+
   // Helper to format timestamps into relative time
   function timeAgo(timestamp) {
     if (!timestamp) return 'Previously';
@@ -153,11 +154,11 @@ function startWorkout() {
   }
 </script>
 
-<!-- Mobile Viewport Container -->
-<div class="w-full max-w-none sm:max-w-[440px] bg-canvas min-h-screen sm:min-h-0 sm:h-[860px] sm:rounded-[44px] sm:shadow-2xl flex flex-col justify-between p-6 sm:p-7 relative overflow-hidden">
+<!-- Mobile Viewport Container: Locked strictly to h-dvh -->
+<div class="w-full max-w-none sm:max-w-[440px] bg-canvas h-dvh sm:h-[860px] sm:rounded-[44px] sm:shadow-2xl flex flex-col justify-between p-6 sm:p-7 relative overflow-hidden">
 
-  <!-- Top Hero Header -->
-  <header class="flex justify-between items-center pt-2">
+  <!-- 1. Top Hero Header (Fixed) -->
+  <header class="flex justify-between items-center pt-1 flex-shrink-0">
     <div>
       <p class="text-xs font-bold uppercase tracking-wider text-ink-muted">Gym Tracker</p>
       <h1 class="text-3xl font-extrabold text-ink-primary tracking-tight">Cycle {$cycleStore.current}</h1>
@@ -170,152 +171,140 @@ function startWorkout() {
     </button>
   </header>
 
-  <!-- Main Content -->
-  <main class="flex-1 overflow-y-auto no-scrollbar space-y-8 py-4 my-auto">
+  <!-- 2. PULL-UP SECTION (Fixed - Never scrolls) -->
+  <section class="space-y-4 pt-8 flex-shrink-0">
+    <h3 class="text-xs font-bold uppercase tracking-wider text-ink-muted px-1">Pull-Ups</h3>
 
-    <!-- PULL-UP SECTION -->
-    <section class="space-y-6">
-      <h3 class="text-xs font-bold uppercase tracking-wider text-ink-muted px-1">Pull-Ups</h3>
-
-      <!-- Today's Progress -->
-      <div class="space-y-2.5">
-        <div class="flex justify-between items-baseline px-0.5">
-          <span class="text-base font-semibold text-ink-primary">Today</span>
-          <span class="text-base font-bold text-ink-primary">
-            {$pullupStore.today} <span class="text-ink-muted font-normal text-sm">/ {$pullupStore.dailyTarget}</span>
-          </span>
-        </div>
-        <div class="h-5 w-full bg-white rounded-full overflow-hidden p-0.5">
-          <div 
-            class="h-full bg-pastel-mint rounded-full transition-all duration-300 ease-out" 
-            style="width: {todayPercent}%;"
-          ></div>
-        </div>
+    <!-- Today's Progress -->
+    <div class="space-y-2">
+      <div class="flex justify-between items-baseline px-0.5">
+        <span class="text-sm font-semibold text-ink-primary">Today</span>
+        <span class="text-sm font-bold text-ink-primary">
+          {$pullupStore.today} <span class="text-ink-muted font-normal text-xs">/ {$pullupStore.dailyTarget}</span>
+        </span>
       </div>
-
-      <!-- Cycle Progress -->
-      <div class="space-y-2.5">
-        <div class="flex justify-between items-baseline px-0.5">
-          <span class="text-base font-semibold text-ink-primary">Cycle Goal</span>
-          <span class="text-base font-bold text-ink-primary">
-            {$pullupStore.cycle} <span class="text-ink-muted font-normal text-sm">/ {$pullupStore.cycleTarget}</span>
-          </span>
-        </div>
-        <div class="h-5 w-full bg-white rounded-full overflow-hidden p-0.5">
-          <div 
-            class="h-full bg-pastel-lavender rounded-full transition-all duration-300 ease-out" 
-            style="width: {cyclePercent}%;"
-          ></div>
-        </div>
+      <div class="h-4 w-full bg-white rounded-full overflow-hidden p-0.5">
+        <div 
+          class="h-full bg-pastel-mint rounded-full transition-all duration-300 ease-out" 
+          style="width: {todayPercent}%;"
+        ></div>
       </div>
+    </div>
 
-      <!-- Steppers -->
-      <div class="flex items-center gap-3 pt-1">
-        
-        <!-- Working Settings Cog -->
-        <button 
-          on:click={openSettings}
-          class="w-14 h-14 flex-shrink-0 rounded-3xl bg-white text-ink-muted hover:text-ink-primary flex items-center justify-center active:scale-95 transition"
-        >
-          <Settings class="w-5 h-5 stroke-[2.2]" />
-        </button>
-
-        <!-- Minus Button (Small) -->
-        <button 
-          on:click={minusPullups}
-          class="w-14 h-14 flex-shrink-0 rounded-3xl bg-pastel-lavenderSoft text-pastel-lavenderText font-bold text-lg flex items-center justify-center active:scale-95 transition"
-        >
-          -{$pullupStore.increment}
-        </button>
-
-        <!-- Plus Button (Large, takes remaining space) -->
-        <button 
-          on:click={addPullups}
-          class="flex-1 h-14 rounded-3xl bg-pastel-mintSoft text-pastel-mintText font-bold text-lg flex items-center justify-center active:scale-95 transition"
-        >
-          +{$pullupStore.increment}
-        </button>
-        
+    <!-- Cycle Progress -->
+    <div class="space-y-2">
+      <div class="flex justify-between items-baseline px-0.5">
+        <span class="text-sm font-semibold text-ink-primary">Cycle Goal</span>
+        <span class="text-sm font-bold text-ink-primary">
+          {$pullupStore.cycle} <span class="text-ink-muted font-normal text-xs">/ {$pullupStore.cycleTarget}</span>
+        </span>
       </div>
+      <div class="h-4 w-full bg-white rounded-full overflow-hidden p-0.5">
+        <div 
+          class="h-full bg-pastel-lavender rounded-full transition-all duration-300 ease-out" 
+          style="width: {cyclePercent}%;"
+        ></div>
+      </div>
+    </div>
 
-    </section>
+    <!-- Steppers -->
+    <div class="flex items-center gap-3 pt-1">
+      <button 
+        on:click={openSettings}
+        class="w-13 h-13 flex-shrink-0 rounded-3xl bg-white text-ink-muted hover:text-ink-primary flex items-center justify-center active:scale-95 transition"
+      >
+        <Settings class="w-5 h-5 stroke-[2.2]" />
+      </button>
 
-    <!-- WORKOUTS JOURNEY TIMELINE -->
-    <section class="space-y-3">
-      <h3 class="text-xs font-bold uppercase tracking-wider text-ink-muted px-1">Workouts This Cycle</h3>
+      <button 
+        on:click={minusPullups}
+        class="w-13 h-13 flex-shrink-0 rounded-3xl bg-pastel-lavenderSoft text-pastel-lavenderText font-bold text-base flex items-center justify-center active:scale-95 transition"
+      >
+        -{$pullupStore.increment}
+      </button>
 
-      <div class="relative pl-8 space-y-3.5">
-        {#each currentCycleWorkouts as workout, i}
-          <TimelineItem 
-            completed={true}
-            nextCompleted={i < currentCycleWorkouts.length - 1}
-            isLast={false}
-            isHolding={holdingSessionId === workout.id}
-            gap="14px"
-          >
-            <!-- Card: Holdable to delete, Tap to inspect -->
-            <div 
-              on:click={() => handleSessionClick(workout)}
-              on:pointerdown={() => startSessionHold(workout)}
-              on:pointerup={cancelSessionHold}
-              on:pointerleave={cancelSessionHold}
-              class="w-full p-4 rounded-3xl flex items-center justify-between cursor-pointer select-none transition-all duration-200 {holdingSessionId === workout.id ? 'bg-rose-950/40 scale-[0.98]' : 'bg-white active:scale-[0.99]'}"
-              role="button"
-              tabindex="0"
-            >
-              <div>
-                <p class="font-bold text-sm leading-tight transition-colors {holdingSessionId === workout.id ? 'text-pastel-coralText' : 'text-ink-primary'}">
-                  {timeAgo(workout.startTime || workout.id)}
-                </p>
-                <p class="text-xs font-medium mt-0.5 transition-colors {holdingSessionId === workout.id ? 'text-ink-muted' : 'text-ink-muted'}">{workout.date} • {workout.exerciseCount} exercises</p>
-              </div>
-              <ChevronRight class="w-5 h-5 text-ink-muted stroke-[2]" />
-            </div>
-          </TimelineItem>
-        {/each}
+      <button 
+        on:click={addPullups}
+        class="flex-1 h-13 rounded-3xl bg-pastel-mintSoft text-pastel-mintText font-bold text-base flex items-center justify-center active:scale-95 transition"
+      >
+        +{$pullupStore.increment}
+      </button>
+    </div>
+  </section>
 
-        <!-- Start / Resume Workout Node -->
+  <!-- 3. WORKOUTS JOURNEY TIMELINE (This is the ONLY area that scrolls) -->
+  <section class="flex-1 min-h-0 flex flex-col space-y-2.5 pt-8">
+    <h3 class="text-xs font-bold uppercase tracking-wider text-ink-muted px-1 flex-shrink-0">Workouts This Cycle</h3>
+
+    <div class="flex-1 min-h-0 overflow-y-auto no-scrollbar relative pl-8 py-1 space-y-3.5 pr-0.5">
+      {#each currentCycleWorkouts as workout, i}
         <TimelineItem 
-          completed={false}
-          isLast={true}
-          isHolding={isHoldingResume}
+          completed={true}
+          nextCompleted={i < currentCycleWorkouts.length - 1}
+          isLast={false}
+          isHolding={holdingSessionId === workout.id}
           gap="14px"
         >
-          <button 
-            on:click={startWorkout}
-            on:pointerdown={startResumeHold}
-            on:pointerup={cancelResumeHold}
-            on:pointerleave={cancelResumeHold}
-            class="w-full p-4 rounded-3xl flex items-center justify-between font-bold text-sm tracking-wide transition-all duration-200 {isHoldingResume ? 'bg-rose-950/40 text-pastel-coralText scale-[0.98]' : 'bg-pastel-mintSoft text-pastel-mintText active:scale-[0.98]'}"
+          <!-- Card: Holdable to delete, Tap to inspect -->
+          <div 
+            on:click={() => handleSessionClick(workout)}
+            on:pointerdown={() => startSessionHold(workout)}
+            on:pointerup={cancelSessionHold}
+            on:pointerleave={cancelSessionHold}
+            class="w-full p-4 rounded-3xl flex items-center justify-between cursor-pointer select-none transition-all duration-200 {holdingSessionId === workout.id ? 'bg-rose-950/40 scale-[0.98]' : 'bg-white active:scale-[0.99]'}"
+            role="button"
+            tabindex="0"
           >
-            {#if $activeWorkoutStore}
-              <div class="flex items-center gap-2">
-                <span>Resume Workout</span>
-              </div>
-            {:else}
-              <span>Start Workout</span>
-            {/if}
-            <Play class="w-4 h-4 fill-current mr-1" />
-          </button>
+            <div>
+              <p class="font-bold text-sm leading-tight transition-colors {holdingSessionId === workout.id ? 'text-pastel-coralText' : 'text-ink-primary'}">
+                {timeAgo(workout.startTime || workout.id)}
+              </p>
+              <p class="text-xs font-medium mt-0.5 text-ink-muted">{workout.date} • {workout.exerciseCount} exercises</p>
+            </div>
+            <ChevronRight class="w-5 h-5 text-ink-muted stroke-[2]" />
+          </div>
         </TimelineItem>
-      </div>
+      {/each}
 
-    </section>
+      <!-- Start / Resume Workout Node -->
+      <TimelineItem 
+        completed={false}
+        isLast={true}
+        isHolding={isHoldingResume}
+        gap="14px"
+      >
+        <button 
+          on:click={startWorkout}
+          on:pointerdown={startResumeHold}
+          on:pointerup={cancelResumeHold}
+          on:pointerleave={cancelResumeHold}
+          class="w-full p-4 rounded-3xl flex items-center justify-between font-bold text-sm tracking-wide transition-all duration-200 {isHoldingResume ? 'bg-rose-950/40 text-pastel-coralText scale-[0.98]' : 'bg-pastel-mintSoft text-pastel-mintText active:scale-[0.98]'}"
+        >
+          {#if $activeWorkoutStore}
+            <div class="flex items-center gap-2">
+              <span>Resume Workout</span>
+            </div>
+          {:else}
+            <span>Start Workout</span>
+          {/if}
+          <Play class="w-4 h-4 fill-current mr-1" />
+        </button>
+      </TimelineItem>
+    </div>
+  </section>
 
-  </main>
-
-  <!-- Bottom Action -->
-  <footer class="pt-1">
+  <!-- 4. Bottom Action (Fixed) -->
+  <footer class="pt-3 flex-shrink-0">
     <button 
       on:click={() => router.navigate('progress')}
       class="w-full bg-white text-ink-primary py-4 rounded-full font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition"
     >
       <span>View Progress</span>
-      <TrendingUp class="w-4 h-4 text-ink" />
+      <TrendingUp class="w-4 h-4 text-ink-primary" />
     </button>
   </footer>
 
-  <!-- 1. Advance Week Modal -->
+  <!-- Advance Cycle Modal -->
   <BottomSheet 
     open={showAdvanceModal}
     subtitle="Next Cycle"
@@ -327,7 +316,7 @@ function startWorkout() {
     on:confirm={confirmAdvance}
   />
 
-  <!-- 2. Pull-Up Settings Modal -->
+  <!-- Pull-Up Settings Modal -->
   <BottomSheet 
     open={showSettingsModal}
     title="Pull-Up Config"
@@ -337,7 +326,6 @@ function startWorkout() {
     on:confirm={saveSettings}
   >
     <div class="space-y-3 pt-1">
-      <!-- Reps per set -->
       <div class="flex items-center justify-between bg-canvas p-4 px-5 rounded-3xl">
         <span class="text-sm font-semibold text-ink-primary">Reps per Set</span>
         <input 
@@ -348,7 +336,6 @@ function startWorkout() {
         />
       </div>
 
-      <!-- Daily Target -->
       <div class="flex items-center justify-between bg-canvas p-4 px-5 rounded-3xl">
         <span class="text-sm font-semibold text-ink-primary">Daily Goal</span>
         <input 
@@ -359,7 +346,6 @@ function startWorkout() {
         />
       </div>
 
-      <!-- Cycle Target -->
       <div class="flex items-center justify-between bg-canvas p-4 px-5 rounded-3xl">
         <span class="text-sm font-semibold text-ink-primary">Cycle Goal</span>
         <input 
@@ -371,6 +357,8 @@ function startWorkout() {
       </div>
     </div>
   </BottomSheet>
+
+  <!-- Delete Session Modal -->
   <BottomSheet 
     open={showDeleteSessionModal}
     title="Delete Session?"
@@ -381,6 +369,7 @@ function startWorkout() {
     on:close={() => showDeleteSessionModal = false}
     on:confirm={confirmDeleteSession}
   />
+
   <!-- Discard Active Workout BottomSheet -->
   <BottomSheet 
     open={showDiscardModal}
